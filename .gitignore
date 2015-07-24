@@ -1,0 +1,6 @@
+/dist
+/build
+/assets
+/base-image/assets/
+/base-image/build/
+/base-image/dist/

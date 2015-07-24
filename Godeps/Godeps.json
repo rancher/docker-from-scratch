@@ -1,0 +1,19 @@
+{
+	"ImportPath": "github.com/rancher/dockerscratch",
+	"GoVersion": "go1.4.1",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/Sirupsen/logrus",
+			"Comment": "v0.8.4",
+			"Rev": "3cb248e9df77413d58a6330dde84236d04c197d5"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/mount",
+			"Comment": "v1.4.1-4890-ga3857cc",
+			"Rev": "a3857cc3799e2a92b92f07842c03b442490f01ab"
+		}
+	]
+}

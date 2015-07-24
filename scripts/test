@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+
+cd $(dirname $0)/..
+
+. ./scripts/common
+
+mkdir -p build/test-cache
+ID=$(docker run -d --privileged -v /lib/modules/$(uname -r):/lib/modules/$(uname -r) $IMAGE)
+docker exec -it $ID docker build -t test-build git://github.com/rancher/tiny-build.git
+docker exec -it $ID docker run test-build

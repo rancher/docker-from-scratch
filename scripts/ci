@@ -1,0 +1,11 @@
+#!/bin/bash
+
+cd $(dirname $0)
+
+./download
+./build
+./package
+
+if [ -z "$NO_TEST" ]; then
+    ./test
+fi
