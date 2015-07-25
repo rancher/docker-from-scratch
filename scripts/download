@@ -40,7 +40,7 @@ download()
 if [ -e base-image/dist/base-files.tar.gz ]; then
     cp base-image/dist/base-files.tar.gz build/
 else
-    download HASH http://
+    download f9e561b91bfdf6c4641e2bec8a69c9d4577b2ba2 https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.1.0/base-files.tar.gz
 fi
 
 download 386f6e91114dc252a13b266fe2ac3a27e83bd0f7 https://get.docker.com/builds/Linux/x86_64/docker-1.7.1
