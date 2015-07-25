@@ -1,6 +1,6 @@
 # Docker `FROM scratch`
 
-Docker-in-Docker image based off of the empty image `scratch`.  Only the bare minimum required files are included to make Docker run.  This image weights in around 25MB expanded.
+Docker-in-Docker image based off of the empty image `scratch`.  Only the bare minimum required files are included to make Docker run.  This image weighs in around 25MB expanded.
 
 ## Running
 
