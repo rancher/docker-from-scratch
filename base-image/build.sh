@@ -8,8 +8,8 @@ IMAGE=${IMAGE:-dockerscratch-files}
 docker build -t $IMAGE .
 
 if [ -z "$NO_BIND" ] && [ "$(uname)" == "Linux" ]; then
-    mkdir -p build/cache
-    ARGS="-v $(pwd):/source -u $(id -u) -e HOME=/root -v $(pwd)/build/cache:/root"
+    mkdir -p cache
+    ARGS="-v $(pwd):/source -u $(id -u) -e HOME=/root -v $(pwd)/cache:/root"
 fi
 
 ID=$(docker run -itd $ARGS $IMAGE /source/scripts/build)
