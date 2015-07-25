@@ -1,9 +1,10 @@
 #!/bin/bash
-set -x
+set -e
 
 cd $(dirname $0)/..
 
 : ${ARTIFACTS:=$(pwd)/assets}
+: ${BUILD:=$(pwd)/build}
 
 check()
 {
@@ -14,7 +15,7 @@ check()
         return 1
     fi
 
-    CURRENT=$(sha1sum $file | awk '{print $1}')
+    CURRENT=$(shasum -a 1 $file | awk '{print $1}')
 
     [ "$hash" = "$CURRENT" ]
 }
@@ -37,10 +38,13 @@ download()
     fi
 }
 
+mkdir -p ${BUILD}
+
 if [ -e base-image/dist/base-files.tar.gz ]; then
     cp base-image/dist/base-files.tar.gz build/
 else
     download f9e561b91bfdf6c4641e2bec8a69c9d4577b2ba2 https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.1.0/base-files.tar.gz
+    cp assets/base-files.tar.gz build
 fi
 
 download 386f6e91114dc252a13b266fe2ac3a27e83bd0f7 https://get.docker.com/builds/Linux/x86_64/docker-1.7.1
