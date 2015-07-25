@@ -4,9 +4,21 @@ Docker-in-Docker image based off of the empty image `scratch`.  Only the bare mi
 
 ## Running
 
+### Overlay
+
 ```bash
 # Daemon
 docker run --name daemon --privileged -d rancher/docker
+
+# Client
+docker exec -it daemon docker ps
+```
+
+### Aufs
+
+```bash
+# Daemon
+docker run --name daemon --privileged -d rancher/docker -d -s aufs
 
 # Client
 docker exec -it daemon docker ps
@@ -34,7 +46,7 @@ docker build -t custom-dind .
 
 ## Graph Driver Compatibility
 
-This image is really designed to run with overlay.  Other graph drivers may not work properly or be missing userspace programs needed.
+This image is really designed to run with overlay.  Aufs is known to work but other graph drivers may not work properly or be missing userspace programs needed.
 
 
 ## Seriously, Why?
