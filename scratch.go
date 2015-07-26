@@ -63,13 +63,21 @@ func mountCgroups() error {
 
 	scanner := bufio.NewScanner(f)
 
+	hierarchies := make(map[string][]string)
+
 	for scanner.Scan() {
-		cgroup := strings.SplitN(scanner.Text(), "\t", 2)[0]
-		if cgroup == "" || cgroup[0] == '#' {
+		fields := strings.SplitN(scanner.Text(), "\t", 2)
+		cgroup := fields[0]
+		if cgroup == "" || cgroup[0] == '#' || len(fields) < 2 {
 			continue
 		}
 
-		if err := mountCgroup(cgroup); err != nil {
+		hierarchy := fields[1]
+		hierarchies[hierarchy] = append(hierarchies[hierarchy], cgroup)
+	}
+
+	for _, hierarchy := range hierarchies {
+		if err := mountCgroup(strings.Join(hierarchy, ",")); err != nil {
 			return err
 		}
 	}
@@ -82,6 +90,17 @@ func mountCgroups() error {
 	return nil
 }
 
+func createSymlink(src, dest string) error {
+	if _, err := os.Stat(dest); os.IsNotExist(err) {
+		log.Debugf("Symlinking %s => %s", src, dest)
+		if err = os.Symlink(src, dest); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func mountCgroup(cgroup string) error {
 	if err := createDirs("/sys/fs/cgroup/" + cgroup); err != nil {
 		return err
@@ -89,6 +108,15 @@ func mountCgroup(cgroup string) error {
 
 	if err := createMounts([][]string{{"none", "/sys/fs/cgroup/" + cgroup, "cgroup", cgroup}}...); err != nil {
 		return err
+	}
+
+	parts := strings.Split(cgroup, ",")
+	if len(parts) > 1 {
+		for _, part := range parts {
+			if err := createSymlink("/sys/fs/cgroup/"+cgroup, "/sys/fs/cgroup/"+part); err != nil {
+				return err
+			}
+		}
 	}
 
 	return nil
