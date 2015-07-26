@@ -90,4 +90,8 @@ File | Description | Can it be ignored
 
 For various reasons Docker or iptables may try to load a kernel module.  You can either manually load all the needed modules from the host or you can bind mount in the kernel modules by adding `-v /lib/modules/$(uname -r)/lib/modules/$(uname -r)` to your `docker run` command
 
+## Debug Logging
 
+To enable debug logging on the startup of docker-from-scrach just add `-e DOCKER_LAUNCH_DEBUG=true` to the `docker run` command.  For example:
+
+    docker run --name daemon --privileged -d -e DOCKER_LAUNCH_DEBUG=true rancher/docker
