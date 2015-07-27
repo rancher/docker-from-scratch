@@ -3,18 +3,19 @@ package dockerlaunch
 import (
 	"bufio"
 	"io"
+	"io/ioutil"
 	"os"
 	"path"
 	"strings"
 	"syscall"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/docker/libnetwork/resolvconf"
 	"github.com/rancher/docker-from-scratch/util"
+	"github.com/rancher/netconf"
 )
 
-const caCrtDir = "/etc/ssl/certs"
-const caCrtName = "ca-certificates.crt"
-const caCrtDefault = "/usr/etc/ssl/certs/ca-certificates.crt"
+const defaultPrefix = "/usr"
 
 var (
 	mounts [][]string = [][]string{
@@ -27,6 +28,13 @@ var (
 		{"none", "/var/run", "tmpfs", ""},
 	}
 )
+
+type Config struct {
+	DnsConfig     netconf.DnsConfig
+	BridgeName    string
+	BridgeAddress string
+	BridgeMtu     int
+}
 
 func createMounts(mounts ...[]string) error {
 	for _, mount := range mounts {
@@ -127,7 +135,32 @@ func execDocker(docker string, args []string) error {
 	return syscall.Exec(docker, append([]string{docker}, args...), os.Environ())
 }
 
+func copyDefault(folder, name string) error {
+	defaultFile := path.Join(defaultPrefix, folder, name)
+	if err := copyFile(defaultFile, folder, name); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func defaultFiles(files ...string) error {
+	for _, file := range files {
+		dir := path.Dir(file)
+		name := path.Base(file)
+		if err := copyDefault(dir, name); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func copyFile(src, folder, name string) error {
+	if _, err := os.Stat(src); os.IsNotExist(err) {
+		return nil
+	}
+
 	dst := path.Join(folder, name)
 	if _, err := os.Stat(dst); err == nil {
 		return nil
@@ -153,26 +186,63 @@ func copyFile(src, folder, name string) error {
 	return err
 }
 
-func createPasswd() error {
-	if _, err := os.Stat("/etc/passwd"); err == nil {
+func tryCreateFile(name, content string) error {
+	if _, err := os.Stat(name); err == nil {
 		return nil
 	}
 
-	f, err := os.Create("/etc/passwd")
-	if err != nil {
+	return ioutil.WriteFile(name, []byte(content), 0644)
+}
+
+func createPasswd() error {
+	return tryCreateFile("/etc/passwd", "root:x:0:0:root:/root:/bin/sh\n")
+}
+
+func createGroup() error {
+	return tryCreateFile("/etc/group", "root:x:0:\n")
+}
+
+func setupNetworking(config *Config) error {
+	if len(config.DnsConfig.Nameservers) != 0 {
+		if err := resolvconf.Build("/etc/resolv.conf", config.DnsConfig.Nameservers, config.DnsConfig.Search); err != nil {
+			return err
+		}
+	}
+
+	if config.BridgeName != "" {
+		log.Debugf("Creating bridge %s (%s)", config.BridgeName, config.BridgeAddress)
+		if err := netconf.ApplyNetworkConfigs(&netconf.NetworkConfig{
+			Interfaces: map[string]netconf.InterfaceConfig{
+				config.BridgeName: {
+					Address: config.BridgeAddress,
+					MTU:     config.BridgeMtu,
+					Bridge:  true,
+				},
+			},
+		}); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func LaunchDocker(config *Config, docker string, args ...string) error {
+	os.Setenv("PATH", "/sbin:/usr/sbin:/usr/bin")
+
+	if err := defaultFiles(
+		"/etc/ssl/certs/ca-certificates.crt",
+		"/etc/passwd",
+		"/etc/group",
+	); err != nil {
 		return err
 	}
 
-	defer f.Close()
-
-	_, err = f.Write([]byte("root:x:0:0:root:/root:/bin/bash\n"))
-	return err
-}
-
-func LaunchDocker(docker string, args ...string) error {
-	os.Setenv("PATH", "/sbin:/usr/sbin:/usr/bin")
-
 	if err := createPasswd(); err != nil {
+		return err
+	}
+
+	if err := createGroup(); err != nil {
 		return err
 	}
 
@@ -188,7 +258,7 @@ func LaunchDocker(docker string, args ...string) error {
 		return err
 	}
 
-	if err := copyFile(caCrtDefault, caCrtDir, caCrtName); err != nil {
+	if err := setupNetworking(config); err != nil {
 		return err
 	}
 
