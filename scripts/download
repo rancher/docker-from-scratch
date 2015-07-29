@@ -47,7 +47,7 @@ else
     cp assets/base-files.tar.gz build
 fi
 
-download 386f6e91114dc252a13b266fe2ac3a27e83bd0f7 https://get.docker.com/builds/Linux/x86_64/docker-1.7.1
+download 788f75cb536c95f28e63bbf47cc4a1407bf813a2 https://github.com/rancher/docker/releases/download/v1.8.0-rc1-ros/docker-1.8.0-rc1
 
 cp assets/docker-* build/docker
 chmod +x build/docker
