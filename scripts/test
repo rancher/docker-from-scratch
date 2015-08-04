@@ -6,7 +6,8 @@ cd $(dirname $0)/..
 . ./scripts/common
 
 mkdir -p build/test-cache
-ID=$(docker run -d --privileged -v /lib/modules/$(uname -r):/lib/modules/$(uname -r) $IMAGE)
+ID=$(docker run -d --privileged -e DOCKER_LAUNCH_DEBUG=true -v /lib/modules/$(uname -r):/lib/modules/$(uname -r) $IMAGE)
+docker logs -f $ID &
 trap "docker rm -fv $ID" EXIT
 docker exec -it $ID docker build -t test-build git://github.com/rancher/tiny-build.git
 docker exec -it $ID docker version
