@@ -8,6 +8,10 @@ import (
 )
 
 func main() {
+	Main()
+}
+
+func Main() {
 	if os.Getenv("DOCKER_LAUNCH_DEBUG") == "true" {
 		log.SetLevel(log.DebugLevel)
 	}
