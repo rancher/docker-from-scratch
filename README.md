@@ -84,6 +84,10 @@ File | Description | Can it be ignored
 `/usr/libexec/git-core/git-submodule`| Used by git | Yes, don't use git based Docker builds
 `/usr/libexec/git-core/git-checkout`| Used by git | Yes, don't use git based Docker builds
 
+## Custom Bridge Name
+
+If you want to run with a custom bridge name you must pass both `--bip` and `-b` as arguments.  Normally this would be an error for Docker but in this situation the docker-from-scratch container will create the bridge device with the IP address specified and then old pass `-b` to Docker.
+
 # Troubleshooting
 
 ## Weird module loading errors

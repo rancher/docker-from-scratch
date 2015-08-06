@@ -21,6 +21,7 @@ cp -rf $BASE/usr/share/git-core usr/share
 
 ln -s ../../bin/git usr/libexec/git-core/git-clone
 ln -s ../../bin/git usr/libexec/git-core/git-checkout
+ln -s bin usr/sbin
 
 # Okay, this is a hack. I won't tell anyone if you don't.
 # Honestly, who uses git submodules anyways...

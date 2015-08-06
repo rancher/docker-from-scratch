@@ -1,6 +1,9 @@
 #!/bin/bash
+set -e
 
 cd $(dirname $0)
+
+docker ps >/dev/null 2>&1 || wrapdocker 2>/dev/null || true
 
 ./download
 ./build
