@@ -5,11 +5,6 @@ cd $(dirname $0)/..
 
 . ./scripts/common
 
-ID=$(docker run -d dockerscratch-build strip --strip-all build/dockerlaunch)
-trap "docker rm -fv $ID" EXIT
-docker logs -f $ID &
-docker wait $ID
-docker cp $ID:/go/src/github.com/rancher/docker-from-scratch/build/dockerlaunch ./build/
 docker build -t $IMAGE -f Dockerfile .
 
 echo Built $IMAGE
