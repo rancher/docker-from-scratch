@@ -17,7 +17,7 @@ func Main() {
 	}
 
 	if len(os.Args) < 2 {
-		log.Fatalf("Usage Example: %s /usr/bin/docker -d -D", os.Args[0])
+		log.Fatalf("Usage Example: %s /usr/bin/docker daemon -D", os.Args[0])
 	}
 
 	args := []string{}
