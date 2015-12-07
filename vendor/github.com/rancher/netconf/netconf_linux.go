@@ -32,6 +32,7 @@ func createInterfaces(netCfg *NetworkConfig) error {
 }
 
 func ApplyNetworkConfigs(netCfg *NetworkConfig) error {
+	log.Debugf("Config: %#v", netCfg)
 	if err := createInterfaces(netCfg); err != nil {
 		return err
 	}
@@ -40,6 +41,8 @@ func ApplyNetworkConfigs(netCfg *NetworkConfig) error {
 	if err != nil {
 		return err
 	}
+
+	dhcpLinks := []string{}
 
 	//apply network config
 	for _, link := range links {
@@ -79,10 +82,22 @@ func ApplyNetworkConfigs(netCfg *NetworkConfig) error {
 		}
 
 		if match.Match != "" {
-			err = applyNetConf(link, match)
-			if err != nil {
+			if match.DHCP {
+				dhcpLinks = append(dhcpLinks, link.Attrs().Name)
+			} else if err = applyNetConf(link, match); err != nil {
 				log.Errorf("Failed to apply settings to %s : %v", linkName, err)
 			}
+		}
+	}
+
+	if len(dhcpLinks) > 0 {
+		log.Infof("Running DHCP on %v", dhcpLinks)
+		dhcpcdArgs := append([]string{"-MA4", "-e", "force_hostname=true"}, dhcpLinks...)
+		cmd := exec.Command("dhcpcd", dhcpcdArgs...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			log.Error(err)
 		}
 	}
 
@@ -94,17 +109,9 @@ func ApplyNetworkConfigs(netCfg *NetworkConfig) error {
 }
 
 func applyNetConf(link netlink.Link, netConf InterfaceConfig) error {
-	if netConf.DHCP {
-		log.Infof("Running DHCP on %s", link.Attrs().Name)
-		cmd := exec.Command("dhcpcd", "-A4", "-e", "force_hostname=true", link.Attrs().Name)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			log.Error(err)
-		}
-	} else if netConf.IPV4LL {
+	if netConf.IPV4LL {
 		if err := AssignLinkLocalIP(link); err != nil {
-			log.Error("IPV4LL set failed")
+			log.Errorf("IPV4LL set failed: %v", err)
 			return err
 		}
 	} else if netConf.Address == "" {
@@ -115,21 +122,22 @@ func applyNetConf(link netlink.Link, netConf InterfaceConfig) error {
 			return err
 		}
 		if err := netlink.AddrAdd(link, addr); err != nil {
-			log.Error("addr add failed")
-			return err
+			//Ignore this error
+			log.Errorf("addr add failed: %v", err)
+		} else {
+			log.Infof("Set %s on %s", netConf.Address, link.Attrs().Name)
 		}
-		log.Infof("Set %s on %s", netConf.Address, link.Attrs().Name)
 	}
 
 	if netConf.MTU > 0 {
 		if err := netlink.LinkSetMTU(link, netConf.MTU); err != nil {
-			log.Error("set MTU Failed")
+			log.Errorf("set MTU Failed: %v", err)
 			return err
 		}
 	}
 
 	if err := netlink.LinkSetUp(link); err != nil {
-		log.Error("failed to setup link")
+		log.Errorf("failed to setup link: %v", err)
 		return err
 	}
 
@@ -144,7 +152,7 @@ func applyNetConf(link netlink.Link, netConf InterfaceConfig) error {
 			Gw:    net.ParseIP(netConf.Gateway),
 		}
 		if err := netlink.RouteAdd(&route); err != nil {
-			log.Error("gateway set failed")
+			log.Errorf("gateway set failed: %v", err)
 			return err
 		}
 

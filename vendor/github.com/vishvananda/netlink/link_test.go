@@ -3,7 +3,9 @@ package netlink
 import (
 	"bytes"
 	"net"
+	"syscall"
 	"testing"
+	"time"
 
 	"github.com/vishvananda/netns"
 )
@@ -150,6 +152,9 @@ func compareVxlan(t *testing.T, expected, actual *Vxlan) {
 	if actual.L3miss != expected.L3miss {
 		t.Fatal("Vxlan.L3miss doesn't match")
 	}
+	if actual.GBP != expected.GBP {
+		t.Fatal("Vxlan.GBP doesn't match")
+	}
 	if expected.NoAge {
 		if !actual.NoAge {
 			t.Fatal("Vxlan.NoAge doesn't match")
@@ -178,6 +183,13 @@ func TestLinkAddDelDummy(t *testing.T) {
 	defer tearDown()
 
 	testLinkAddDel(t, &Dummy{LinkAttrs{Name: "foo"}})
+}
+
+func TestLinkAddDelIfb(t *testing.T) {
+	tearDown := setUpNetlinkTest(t)
+	defer tearDown()
+
+	testLinkAddDel(t, &Ifb{LinkAttrs{Name: "foo"}})
 }
 
 func TestLinkAddDelBridge(t *testing.T) {
@@ -215,6 +227,27 @@ func TestLinkAddDelMacvlan(t *testing.T) {
 	testLinkAddDel(t, &Macvlan{
 		LinkAttrs: LinkAttrs{Name: "bar", ParentIndex: parent.Attrs().Index},
 		Mode:      MACVLAN_MODE_PRIVATE,
+	})
+
+	if err := LinkDel(parent); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestLinkAddDelMacvtap(t *testing.T) {
+	tearDown := setUpNetlinkTest(t)
+	defer tearDown()
+
+	parent := &Dummy{LinkAttrs{Name: "foo"}}
+	if err := LinkAdd(parent); err != nil {
+		t.Fatal(err)
+	}
+
+	testLinkAddDel(t, &Macvtap{
+		Macvlan: Macvlan{
+			LinkAttrs: LinkAttrs{Name: "bar", ParentIndex: parent.Attrs().Index},
+			Mode:      MACVLAN_MODE_PRIVATE,
+		},
 	})
 
 	if err := LinkDel(parent); err != nil {
@@ -636,5 +669,56 @@ func TestLinkSet(t *testing.T) {
 
 	if !bytes.Equal(link.Attrs().HardwareAddr, addr) {
 		t.Fatalf("hardware address not changed!")
+	}
+}
+
+func expectLinkUpdate(ch <-chan LinkUpdate, ifaceName string, up bool) bool {
+	for {
+		timeout := time.After(time.Minute)
+		select {
+		case update := <-ch:
+			if ifaceName == update.Link.Attrs().Name && (update.IfInfomsg.Flags&syscall.IFF_UP != 0) == up {
+				return true
+			}
+		case <-timeout:
+			return false
+		}
+	}
+}
+
+func TestLinkSubscribe(t *testing.T) {
+	tearDown := setUpNetlinkTest(t)
+	defer tearDown()
+
+	ch := make(chan LinkUpdate)
+	done := make(chan struct{})
+	defer close(done)
+	if err := LinkSubscribe(ch, done); err != nil {
+		t.Fatal(err)
+	}
+
+	link := &Veth{LinkAttrs{Name: "foo", TxQLen: testTxQLen, MTU: 1400}, "bar"}
+	if err := LinkAdd(link); err != nil {
+		t.Fatal(err)
+	}
+
+	if !expectLinkUpdate(ch, "foo", false) {
+		t.Fatal("Add update not received as expected")
+	}
+
+	if err := LinkSetUp(link); err != nil {
+		t.Fatal(err)
+	}
+
+	if !expectLinkUpdate(ch, "foo", true) {
+		t.Fatal("Link Up update not received as expected")
+	}
+
+	if err := LinkDel(link); err != nil {
+		t.Fatal(err)
+	}
+
+	if !expectLinkUpdate(ch, "foo", false) {
+		t.Fatal("Del update not received as expected")
 	}
 }
