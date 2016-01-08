@@ -31,4 +31,4 @@ chmod +x usr/libexec/git-core/git-submodule
 ln -s busybox usr/bin/ps
 ln -s busybox usr/bin/modprobe
 
-tar cvzf ../../dist/base-files.tar.gz .
+tar cvzf ../../dist/base-files_${1}.tar.gz .

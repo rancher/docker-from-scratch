@@ -5,22 +5,13 @@ cd $(dirname $0)/..
 
 : ${ARTIFACTS:=$(pwd)/assets}
 : ${BUILD:=$(pwd)/build}
-: ${CONFIG:=$(pwd)/config}
-: ${DIST:=$(pwd)/dist}
-
-mkdir -p ${BUILD} ${DIST}
 
 busybox_install()
 {
     local conf=$1
     local bbconf=$2
-    local target=$3
 
-    if [ "$#" = "2" ]; then
-        target=$2
-        bbconf=
-    fi
-
+    mkdir -p ${BUILD}
     cd ${BUILD}
 
     local buildroot=$(ls -1 ${ARTIFACTS}/buildroot-*.tar.bz2)
@@ -32,10 +23,8 @@ busybox_install()
         buildroot=$(basename $buildroot)
     fi
 
-    if [ ! -e ${buildroot/.tar.bz2//} ]; then
-        tar xvjf ${ARTIFACTS}/${buildroot}
-    fi
-
+    rm -rf ${buildroot/.tar.bz2//}
+    tar xvjf ${ARTIFACTS}/${buildroot}
     cd ${buildroot/.tar.bz2//}
 
     cp $conf .config
@@ -46,4 +35,4 @@ busybox_install()
     make
 }
 
-busybox_install ${CONFIG}/buildroot-config-static ${CONFIG}/busybox-ps-modprobe-only.config ${DIST}/rootfs-static.tar
+busybox_install "$1" "$2"

@@ -3,6 +3,12 @@ set -e
 
 cd $(dirname $0)/..
 
+: ${CONFIG:=$(pwd)/config}
+: ${ARCH:='amd64 armhf'}
+
 ./scripts/download
-./scripts/build-busybox-static
-./scripts/package
+
+for arch in $ARCH; do
+  ./scripts/build-busybox-static ${CONFIG}/${arch}/buildroot-config-static ${CONFIG}/busybox-ps-modprobe-only.config
+  ./scripts/package ${arch}
+done
