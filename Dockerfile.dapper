@@ -1,0 +1,22 @@
+FROM golang:1.5.2
+
+ENV DAPPER_SOURCE /go/src/github.com/rancher/docker-from-scratch
+ENV DAPPER_OUTPUT ""
+ENV DAPPER_DOCKER_SOCKET true
+ENV DAPPER_ENV NO_TEST
+
+ENV GO15VENDOREXPERIMENT 1
+
+RUN mkdir -p ${DAPPER_SOURCE} && ln -s ${DAPPER_SOURCE} /source
+
+WORKDIR ${DAPPER_SOURCE}
+
+RUN mkdir -p assets
+
+WORKDIR ${DAPPER_SOURCE}/assets
+RUN curl -OL https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.3.0/base-files_amd64.tar.gz
+
+RUN curl -OL https://get.docker.com/builds/Linux/x86_64/docker-1.9.1
+RUN mv ./docker-* ./docker && chmod +x ./docker && cp ./docker /usr/bin/docker
+
+WORKDIR ${DAPPER_SOURCE}
