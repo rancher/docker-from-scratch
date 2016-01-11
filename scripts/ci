@@ -3,8 +3,12 @@ set -e
 
 cd $(dirname $0)
 
-./build
-./package
+: ${ARCH:='amd64 arm'}
+
+for arch in ${ARCH}; do
+    ./build ${arch}
+    ./package ${arch}
+done
 
 if [ -z "$NO_TEST" ]; then
     ./test

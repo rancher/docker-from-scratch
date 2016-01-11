@@ -1,10 +1,20 @@
 #!/bin/bash
-set -e
+set -ex
 
 cd $(dirname $0)/..
 
+arch="$1"
+
+rm -rf build
 mkdir -p build
 
-cp /etc/ssl/certs/ca-certificates.crt build/
+cp /etc/ssl/certs/ca-certificates.crt ./build/
+cp ./assets/base-files_${arch}.tar.gz ./build/base-files.tar.gz
+cp ./assets/docker_${arch} ./build/docker
 
-go build -ldflags "-linkmode external -extldflags -static" -o build/dockerlaunch ./main
+if [ "${arch}" == "arm" ]; then
+  export GOARM=6
+  export CC=/usr/bin/arm-linux-gnueabihf-gcc
+  export CGO_ENABLED=1
+fi
+GOARCH=${arch} go build -ldflags "-linkmode external -extldflags -static" -o build/dockerlaunch ./main
