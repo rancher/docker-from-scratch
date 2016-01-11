@@ -4,7 +4,7 @@ set -e
 cd $(dirname $0)/..
 
 : ${CONFIG:=$(pwd)/config}
-: ${ARCH:='amd64 armhf'}
+: ${ARCH:='amd64 arm'}
 
 ./scripts/download
 
