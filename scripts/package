@@ -3,11 +3,11 @@ set -e
 
 cd $(dirname $0)/..
 
+arch="$1"
+
 . ./scripts/common
 
-cp assets/base-files_amd64.tar.gz build/base-files.tar.gz
-cp assets/docker build/docker
+[ "${arch}" == "amd64" ] || IMAGE=${IMAGE}_${arch}
+docker build -t ${IMAGE} -f Dockerfile .
 
-docker build -t $IMAGE -f Dockerfile .
-
-echo Built $IMAGE
+echo Built ${IMAGE}
