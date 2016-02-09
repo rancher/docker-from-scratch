@@ -306,7 +306,7 @@ ff02::2    ip6-allrouters
 				config.BridgeName: {
 					Address: config.BridgeAddress,
 					MTU:     config.BridgeMtu,
-					Bridge:  true,
+					Bridge:  "true",
 				},
 			},
 		}); err != nil {
