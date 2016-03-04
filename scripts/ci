@@ -3,7 +3,7 @@ set -e
 
 cd $(dirname $0)
 
-: ${ARCH:='amd64 arm'}
+: ${ARCH:='amd64 arm arm64'}
 
 for arch in ${ARCH}; do
     ./build ${arch}
