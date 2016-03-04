@@ -7,7 +7,7 @@ RUN curl -o /usr/local/bin/docker -L https://get.docker.com/builds/Linux/x86_64/
 ENV DAPPER_SOURCE /go/src/github.com/rancher/docker-from-scratch
 ENV DAPPER_OUTPUT ""
 ENV DAPPER_DOCKER_SOCKET true
-ENV DAPPER_ENV NO_TEST
+ENV DAPPER_ENV NO_TEST ARCH
 
 ENV GO15VENDOREXPERIMENT 1
 
