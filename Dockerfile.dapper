@@ -5,7 +5,7 @@ RUN apt-get update && \
         libblkid-dev libmount-dev libselinux1-dev cpio genisoimage qemu-kvm python-pip ca-certificates pkg-config tox
 
 RUN wget -O - https://storage.googleapis.com/golang/go1.6.linux-amd64.tar.gz | tar -xz -C /usr/local
-RUN wget -O /usr/local/bin/docker -L https://get.docker.com/builds/Linux/x86_64/docker-1.10.2 && \
+RUN wget -O /usr/local/bin/docker -L https://get.docker.com/builds/Linux/x86_64/docker-1.10.3 && \
     chmod +x /usr/local/bin/docker
 
 ENV PATH /usr/local/go/bin:$PATH
@@ -29,11 +29,11 @@ RUN wget https://github.com/rancher/docker-from-scratch/releases/download/bin-v0
 RUN wget https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.4.0/base-files_arm.tar.gz
 RUN wget https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.4.0/base-files_arm64.tar.gz
 
-RUN wget -O ./docker_amd64 -L https://get.docker.com/builds/Linux/x86_64/docker-1.10.2 && \
+RUN wget -O ./docker_amd64 -L https://get.docker.com/builds/Linux/x86_64/docker-1.10.3 && \
     chmod +x ./docker_amd64
-RUN wget -O ./docker_arm -L https://github.com/rancher/docker/releases/download/v1.10.2-arm2/docker-1.10.2_arm && \
+RUN wget -O ./docker_arm -L https://github.com/rancher/docker/releases/download/v1.10.3-arm/docker-1.10.3_arm && \
     chmod +x ./docker_arm
-RUN wget -O ./docker_arm64 -L https://github.com/rancher/docker/releases/download/v1.10.2-arm2/docker-1.10.2_arm64 && \
+RUN wget -O ./docker_arm64 -L https://github.com/rancher/docker/releases/download/v1.10.3-arm/docker-1.10.3_arm64 && \
     chmod +x ./docker_arm64
 
 WORKDIR ${DAPPER_SOURCE}
