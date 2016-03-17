@@ -12,14 +12,19 @@ cp /etc/ssl/certs/ca-certificates.crt ./build/
 cp ./assets/base-files_${arch}.tar.gz ./build/base-files.tar.gz
 cp ./assets/docker_${arch} ./build/docker
 
+strip_bin=$(which strip)
 if [ "${arch}" == "arm" ]; then
   export GOARM=6
-  export CC=/usr/bin/arm-linux-gnueabihf-gcc
   export CGO_ENABLED=1
+  export CC=/usr/bin/arm-linux-gnueabihf-gcc
+  strip_bin=/usr/bin/arm-linux-gnueabihf-strip
 fi
 if [ "${arch}" == "arm64" ]; then
-  export CC=/usr/bin/aarch64-linux-gnu-gcc
+  export GOARM=
   export CGO_ENABLED=1
+  export CC=/usr/bin/aarch64-linux-gnu-gcc
+  strip_bin=/usr/bin/aarch64-linux-gnu-strip
 fi
 
 GOARCH=${arch} go build -ldflags "-linkmode external -extldflags -static" -o build/dockerlaunch ./main
+${strip_bin} --strip-all build/dockerlaunch
