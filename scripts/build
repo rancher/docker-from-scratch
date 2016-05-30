@@ -5,12 +5,14 @@ cd $(dirname $0)/..
 
 arch="$1"
 
+. ./scripts/common
+
 rm -rf build
 mkdir -p build
 
 cp /etc/ssl/certs/ca-certificates.crt ./build/
 cp ./assets/base-files_${arch}.tar.gz ./build/base-files.tar.gz
-cp ./assets/docker_${arch} ./build/docker
+tar -xf ./assets/docker-$(echo $VERSION | sed -e 's/^v//')_${arch}.tgz -C ./build --strip-components=1
 
 strip_bin=$(which strip)
 if [ "${arch}" == "arm" ]; then
