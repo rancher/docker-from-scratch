@@ -18,20 +18,18 @@ ENV DAPPER_OUTPUT ""
 ENV DAPPER_DOCKER_SOCKET true
 ENV DAPPER_ENV NO_TEST ARCH
 
-RUN mkdir -p ${DAPPER_SOURCE} && ln -s ${DAPPER_SOURCE} /source
-
-WORKDIR ${DAPPER_SOURCE}
-
-RUN mkdir -p assets
+RUN mkdir -p ${DAPPER_SOURCE}/assets && ln -s ${DAPPER_SOURCE} /source
 
 WORKDIR ${DAPPER_SOURCE}/assets
-RUN wget https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.4.0/base-files_amd64.tar.gz
-RUN wget https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.4.0/base-files_arm.tar.gz
-RUN wget https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.4.0/base-files_arm64.tar.gz
 
-RUN wget -O docker-1.11.1_amd64.tgz -L https://get.docker.com/builds/Linux/x86_64/docker-1.11.1.tgz
-RUN wget -L https://github.com/rancher/docker/releases/download/v1.11.1-ros1/docker-1.11.1_arm.tgz
-RUN wget -L https://github.com/rancher/docker/releases/download/v1.11.1-ros1/docker-1.11.1_arm64.tgz
+RUN wget https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.4.0/base-files_amd64.tar.gz && \
+    wget https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.4.0/base-files_arm.tar.gz && \
+    wget https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.4.0/base-files_arm64.tar.gz
+
+ENV DOCKER_VERSION=1.11.1 DOCKER_PATCH_VERSION=v1.11.1-ros2
+RUN wget -O docker-${DOCKER_VERSION}_amd64.tgz -L https://get.docker.com/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz && \
+    wget -L https://github.com/rancher/docker/releases/download/${DOCKER_PATCH_VERSION}/docker-${DOCKER_VERSION}_arm.tgz && \
+    wget -L https://github.com/rancher/docker/releases/download/${DOCKER_PATCH_VERSION}/docker-${DOCKER_VERSION}_arm64.tgz
 
 WORKDIR ${DAPPER_SOURCE}
 
