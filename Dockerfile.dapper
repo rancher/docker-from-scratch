@@ -26,7 +26,7 @@ RUN wget https://github.com/rancher/docker-from-scratch/releases/download/bin-v0
     wget https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.4.0/base-files_arm.tar.gz && \
     wget https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.4.0/base-files_arm64.tar.gz
 
-ENV DOCKER_VERSION=1.11.1 DOCKER_PATCH_VERSION=v1.11.1-ros2
+ENV DOCKER_VERSION=1.11.1 DOCKER_PATCH_VERSION=v1.11.1-ros4
 RUN wget -O docker-${DOCKER_VERSION}_amd64.tgz -L https://get.docker.com/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz && \
     wget -L https://github.com/rancher/docker/releases/download/${DOCKER_PATCH_VERSION}/docker-${DOCKER_VERSION}_arm.tgz && \
     wget -L https://github.com/rancher/docker/releases/download/${DOCKER_PATCH_VERSION}/docker-${DOCKER_VERSION}_arm64.tgz
