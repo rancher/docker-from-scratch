@@ -5,8 +5,6 @@ cd $(dirname $0)/..
 
 arch="$1"
 
-. ./scripts/common
-
 rm -rf build
 mkdir -p build
 
