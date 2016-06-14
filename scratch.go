@@ -338,7 +338,7 @@ ff02::2    ip6-allrouters
 		}
 	}
 
-	if config.BridgeName != "" {
+	if config.BridgeName != "" && config.BridgeName != "none" {
 		log.Debugf("Creating bridge %s (%s)", config.BridgeName, config.BridgeAddress)
 		if err := netconf.ApplyNetworkConfigs(&netconf.NetworkConfig{
 			Interfaces: map[string]netconf.InterfaceConfig{
