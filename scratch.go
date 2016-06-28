@@ -110,7 +110,7 @@ func mountCgroups(hierarchyConfig map[string]string) error {
 		log.Debugf("/proc/cgroups: %s", text)
 		fields := strings.SplitN(text, "\t", 3)
 		cgroup := fields[0]
-		if cgroup == "" || cgroup[0] == '#' || len(fields) < 3 {
+		if cgroup == "" || cgroup[0] == '#' || len(fields) < 3 || cgroup[2] == '0' {
 			continue
 		}
 
