@@ -547,10 +547,12 @@ func firstPrepare() error {
 	}
 
 	if err := defaultFolders(
+		"/etc/docker",
 		"/etc/selinux",
 		"/etc/selinux/ros",
 		"/etc/selinux/ros/policy",
 		"/etc/selinux/ros/contexts",
+		"/var/lib/cni",
 	); err != nil {
 		return err
 	}
