@@ -492,6 +492,8 @@ func createDaemonConfig(config *Config) error {
 func cleanupFiles(graphDirectory string) {
 	zeroFiles := []string{
 		"/etc/docker/key.json",
+		"/etc/docker/daemon.json",
+		"/etc/docker/system-daemon.json",
 		path.Join(graphDirectory, "image/overlay/repositories.json"),
 	}
 
