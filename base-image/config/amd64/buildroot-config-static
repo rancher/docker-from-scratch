@@ -2203,7 +2203,7 @@ BR2_PACKAGE_QEMU_ARCH_SUPPORTS_TARGET=y
 # cups needs a toolchain w/ C++
 #
 # BR2_PACKAGE_DHCP is not set
-# BR2_PACKAGE_DHCPCD is not set
+BR2_PACKAGE_DHCPCD=y
 # BR2_PACKAGE_DHCPDUMP is not set
 # BR2_PACKAGE_DNSMASQ is not set
 # BR2_PACKAGE_DRBD_UTILS is not set
@@ -2273,7 +2273,7 @@ BR2_PACKAGE_IPTABLES=y
 # nftables compat needs a toolchain w/ wchar, dynamic library, headers >= 3.4
 #
 # BR2_PACKAGE_IPTRAF_NG is not set
-# BR2_PACKAGE_IPUTILS is not set
+BR2_PACKAGE_IPUTILS=y
 # BR2_PACKAGE_IRSSI is not set
 # BR2_PACKAGE_IW is not set
 
@@ -2354,7 +2354,7 @@ BR2_PACKAGE_IPTABLES=y
 # BR2_PACKAGE_NETPLUG is not set
 # BR2_PACKAGE_NETSNMP is not set
 # BR2_PACKAGE_NETSTAT_NAT is not set
-# BR2_PACKAGE_NET_TOOLS is not set
+BR2_PACKAGE_NET_TOOLS=y
 
 #
 # NetworkManager needs udev /dev management and a (e)glibc toolchain w/ headers >= 3.7
@@ -2617,7 +2617,7 @@ BR2_PACKAGE_AUDIT_ARCH_SUPPORTS=y
 # audit needs a uClibc or (e)glibc toolchain w/ threads, dynamic library
 #
 # BR2_PACKAGE_BOOTUTILS is not set
-# BR2_PACKAGE_COREUTILS is not set
+BR2_PACKAGE_COREUTILS=y
 # BR2_PACKAGE_CPULOAD is not set
 # BR2_PACKAGE_DCRON is not set
 # BR2_PACKAGE_DEBIANUTILS is not set
@@ -2660,7 +2660,7 @@ BR2_PACKAGE_INITSCRIPTS=y
 # openvmtools needs an (e)glibc or musl toolchain w/ wchar, threads, RPC, locale
 #
 # BR2_PACKAGE_POLKIT is not set
-# BR2_PACKAGE_PROCPS_NG is not set
+BR2_PACKAGE_PROCPS_NG=y
 # BR2_PACKAGE_PSMISC is not set
 # BR2_PACKAGE_PWGEN is not set
 # BR2_PACKAGE_QUOTA is not set
@@ -2682,7 +2682,7 @@ BR2_PACKAGE_INITSCRIPTS=y
 # BR2_PACKAGE_SYSKLOGD is not set
 # BR2_PACKAGE_SYSLOG_NG is not set
 BR2_PACKAGE_SYSTEMD_ARCH_SUPPORTS=y
-# BR2_PACKAGE_TAR is not set
+BR2_PACKAGE_TAR=y
 
 #
 # tpm-tools needs a toolchain w/ threads, dynamic library
