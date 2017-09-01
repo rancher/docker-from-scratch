@@ -1,7 +1,8 @@
 FROM ubuntu:16.04
 
-RUN apt-get update && \
-    apt-get -y install locales sudo vim less curl wget git rsync build-essential isolinux xorriso gccgo \
+RUN sed -i~ 's/^# deb-src/deb-src/g' /etc/apt/sources.list \
+    && apt-get update \
+    && apt-get -y install locales sudo vim less curl wget git rsync build-essential isolinux xorriso gccgo \
         libblkid-dev libmount-dev libselinux1-dev cpio genisoimage qemu-kvm python-pip ca-certificates pkg-config tox
 
 COPY ./scripts/install-libs.sh /tmp/
@@ -25,12 +26,13 @@ RUN mkdir -p ${DAPPER_SOURCE}/assets && ln -s ${DAPPER_SOURCE} /source
 
 WORKDIR ${DAPPER_SOURCE}/assets
 
-RUN wget https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.4.0/base-files_amd64.tar.gz && \
-    wget https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.4.0/base-files_arm.tar.gz && \
-    wget https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.4.0/base-files_arm64.tar.gz
+COPY base-image/dist/base-files_amd64.tar.gz .
+#RUN wget https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.4.0/base-files_amd64.tar.gz && \
+#    wget https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.4.0/base-files_arm.tar.gz && \
+#    wget https://github.com/rancher/docker-from-scratch/releases/download/bin-v0.4.0/base-files_arm64.tar.gz
 
 ENV DOCKER_VERSION=1.11.2 DOCKER_PATCH_VERSION=v1.11.2-ros1
-ENV VERSION=v${DOCKER_VERSION}-2
+ENV VERSION=v${DOCKER_VERSION}-3
 
 RUN wget -O docker-${DOCKER_VERSION}_amd64.tgz -L https://get.docker.com/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz && \
     wget -L https://github.com/rancher/docker/releases/download/${DOCKER_PATCH_VERSION}/docker-${DOCKER_VERSION}_arm.tgz && \

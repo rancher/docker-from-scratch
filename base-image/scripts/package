@@ -12,7 +12,14 @@ BASE=$(echo ../buildroot-*/output/target/)
 
 mkdir -p usr/bin usr/share usr/libexec/git-core
 
+echo "============================="
+ls $BASE/bin/
+echo "============================="
+ls $BASE/usr/bin/
+echo "============================="
 cp $BASE/bin/busybox usr/bin
+cp $BASE/bin/sh usr/bin
+cp $BASE/bin/bash usr/bin
 cp $BASE/usr/bin/xz usr/bin
 cp $BASE/usr/bin/git usr/bin
 cp $BASE/usr/bin/ssh usr/bin

@@ -3,6 +3,9 @@ set -e
 
 cd $(dirname $0)/..
 
+# testing
+ARCH="amd64"
+
 : ${CONFIG:=$(pwd)/config}
 : ${ARCH:='amd64 arm arm64'}
 
