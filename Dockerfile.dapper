@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:xenial-20210416
 
 RUN apt-get update && \
     apt-get -y install locales sudo vim less curl wget git rsync build-essential isolinux xorriso gccgo \
